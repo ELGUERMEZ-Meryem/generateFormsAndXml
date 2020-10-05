@@ -1,16 +1,25 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
 
-import { AppComponent } from './app.component';
+import {AppComponent} from './app.component';
+import {GenerateFormComponent} from './generate-form/generate-form.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import {FormlyModule} from "@ngx-formly/core";
+import {FormlyBootstrapModule} from "@ngx-formly/bootstrap";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    GenerateFormComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    ReactiveFormsModule,
+    FormlyModule.forRoot(),
+    FormlyBootstrapModule
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
