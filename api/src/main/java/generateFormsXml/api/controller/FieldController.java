@@ -27,7 +27,11 @@ public class FieldController {
 
     @PostMapping("/values/{email}")
     public ResponseEntity<?> saveValues(@RequestBody Object object, @PathVariable String email) {
-        fieldService.saveXmlValues(object, email);
-        return ResponseEntity.status(HttpStatus.OK).body(true);
+        try {
+            fieldService.saveXmlValues(object, email);
+            return ResponseEntity.status(HttpStatus.OK).body(true);
+        } catch (ElementNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(true);
+        }
     }
 }

@@ -19,6 +19,7 @@ export class GenerateFormComponent implements OnInit {
   };
   fields: FormlyFieldConfig[] = [];
   error: string;
+  private email: string;
 
   constructor(private generateFormService: GenerateFormService) {
   }
@@ -28,10 +29,21 @@ export class GenerateFormComponent implements OnInit {
 
   submit() {
     console.log("submit ", this.model);
+    if (this.form.invalid) {
+      return;
+    }
+    this.error = '';
+    this.generateFormService.saveFieldsValues(this.model, this.email).pipe(tap(response => console.log('response ', response)),
+      catchError(err => {
+        if (err.status === 404)
+          this.error = 'something is wrong!'
+        return throwError(err);
+      })).subscribe();
   }
 
   getForm(email: string) {
-    console.log('email', email);
+    this.email = email;
+    console.log('email', this.form);
     if (email === '') {
       this.error = 'you have to enter your email';
       return;
