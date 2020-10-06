@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class FieldController {
 
     private final FieldService fieldService;
@@ -16,13 +17,11 @@ public class FieldController {
 
     @GetMapping(value = "/fields/{email}")
     public ResponseEntity<?> getAllFields(@PathVariable String email) {
-        System.out.println("111111 ");
         return ResponseEntity.status(HttpStatus.OK).body(fieldService.getAllFieldsByCountryAlpha2Code(email));
     }
 
     @PostMapping("/values/{email}")
     public ResponseEntity<?> saveValues(@RequestBody Object object, @PathVariable String email) {
-        System.out.println("hddhhdhh ");
         fieldService.saveXmlValues(object, email);
         return ResponseEntity.status(HttpStatus.OK).body(true);
     }
