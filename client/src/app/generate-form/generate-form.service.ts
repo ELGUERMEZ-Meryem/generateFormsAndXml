@@ -4,14 +4,14 @@ import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
 
 @Injectable()
-export class TransactionService {
+export class GenerateFormService {
   private BASE_URL_FIELDS = 'fields';
   private BASE_URL_VALUES = 'values';
 
   constructor(private http: HttpClient) {
   }
 
-  getAllFieldsOfCountry(email: string): Observable<any> {
+  getAllFieldsOfUser(email: string): Observable<any> {
     return this.http.get<any>(`${environment.apiUrl}${this.BASE_URL_FIELDS}/${email}`);
   }
 
