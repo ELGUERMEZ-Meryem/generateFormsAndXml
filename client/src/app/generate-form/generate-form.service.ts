@@ -11,12 +11,12 @@ export class TransactionService {
   constructor(private http: HttpClient) {
   }
 
-  getAllFieldsOfCountry(alpha2code: string): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}${this.BASE_URL_FIELDS}/${alpha2code}`);
+  getAllFieldsOfCountry(email: string): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}${this.BASE_URL_FIELDS}/${email}`);
   }
 
-  saveFieldsValues(model: any, alpha2code: string): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}${this.BASE_URL_VALUES}/${alpha2code}`, model);
+  saveFieldsValues(model: any, email: string): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}${this.BASE_URL_VALUES}/${email}`, model);
   }
 
 }
