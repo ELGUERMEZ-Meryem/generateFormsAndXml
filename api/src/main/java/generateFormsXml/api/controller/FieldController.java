@@ -1,5 +1,6 @@
 package generateFormsXml.api.controller;
 
+import generateFormsXml.api.exception.ElementNotFoundException;
 import generateFormsXml.api.service.FieldService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,11 @@ public class FieldController {
 
     @GetMapping(value = "/fields/{email}")
     public ResponseEntity<?> getAllFields(@PathVariable String email) {
-        return ResponseEntity.status(HttpStatus.OK).body(fieldService.getAllFieldsByCountryAlpha2Code(email));
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(fieldService.getAllFieldsByCountryAlpha2Code(email));
+        } catch (ElementNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(true);
+        }
     }
 
     @PostMapping("/values/{email}")

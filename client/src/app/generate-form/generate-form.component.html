@@ -2,6 +2,7 @@
   <label>Enter your email</label>
   <input type="text" #email>
   <button type="button" (click)="getForm(email.value)">get form</button>
+  <label *ngIf="error" style="color: red">{{error}}</label>
 </div>
 <div *ngIf="fields.length !== 0">
   <form [formGroup]="form" (ngSubmit)="submit()">

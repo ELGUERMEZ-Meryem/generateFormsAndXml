@@ -18,6 +18,7 @@ export class GenerateFormComponent implements OnInit {
     },
   };
   fields: FormlyFieldConfig[] = [];
+  error: string;
 
   constructor(private generateFormService: GenerateFormService) {
   }
@@ -31,6 +32,12 @@ export class GenerateFormComponent implements OnInit {
 
   getForm(email: string) {
     console.log('email', email);
-    this.generateFormService.getAllFieldsOfUser(email).pipe(tap(fields => this.fields = fields), catchError(err => throwError(err))).subscribe();
+    this.error = '';
+    this.generateFormService.getAllFieldsOfUser(email).pipe(tap(fields => this.fields = fields),
+      catchError(err => {
+        if (err.status === 404)
+          this.error = 'user not found'
+        return throwError(err);
+      })).subscribe();
   }
 }
