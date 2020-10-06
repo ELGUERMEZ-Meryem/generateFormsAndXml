@@ -6,11 +6,9 @@ import generateFormsXml.api.entity.Template;
 import generateFormsXml.api.entity.User;
 import generateFormsXml.api.exception.ElementNotFoundException;
 import generateFormsXml.api.model.FieldFormlyModel;
+import generateFormsXml.api.model.Option;
 import generateFormsXml.api.model.TemplateOption;
-import generateFormsXml.api.repository.FieldRepository;
-import generateFormsXml.api.repository.FormRepository;
-import generateFormsXml.api.repository.TemplateRepository;
-import generateFormsXml.api.repository.UserRepository;
+import generateFormsXml.api.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,12 +22,14 @@ public class FieldService implements IField {
     private final UserRepository userRepository;
     private final FormRepository formRepository;
     private final TemplateRepository templateRepository;
+    private final CountryRepository countryRepository;
 
-    public FieldService(FieldRepository fieldRepository, UserRepository userRepository, FormRepository formRepository, TemplateRepository templateRepository) {
+    public FieldService(FieldRepository fieldRepository, UserRepository userRepository, FormRepository formRepository, TemplateRepository templateRepository, CountryRepository countryRepository) {
         this.fieldRepository = fieldRepository;
         this.userRepository = userRepository;
         this.formRepository = formRepository;
         this.templateRepository = templateRepository;
+        this.countryRepository = countryRepository;
     }
 
     @Override
@@ -59,8 +59,12 @@ public class FieldService implements IField {
                 .type(field.getFieldType())
                 .templateOptions(TemplateOption.builder().label(field.getLabel()).disabled(!field.getIsEditable()).placeholder(field.getLabel()).required(field.getIsMandatory()).build())
                 .build();
+
         if (form != null)
             f.setDefaultValue((String) form.getValue().get(field.getNodeName()));
+
+        if (field.getFieldType().equals("select"))
+            f.getTemplateOptions().setOptions(countryRepository.findAll().stream().map(country -> Option.builder().value(country.getAlpha2code()).label(country.getName()).build()).collect(Collectors.toList()));
 
         return f;
     }
