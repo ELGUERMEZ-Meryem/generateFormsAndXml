@@ -32,6 +32,10 @@ export class GenerateFormComponent implements OnInit {
 
   getForm(email: string) {
     console.log('email', email);
+    if (email === '') {
+      this.error = 'you have to enter your email';
+      return;
+    }
     this.error = '';
     this.generateFormService.getAllFieldsOfUser(email).pipe(tap(fields => this.fields = fields),
       catchError(err => {
