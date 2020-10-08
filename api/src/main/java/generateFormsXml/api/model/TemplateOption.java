@@ -13,5 +13,7 @@ public class TemplateOption {
     private String placeholder;
     private Boolean required;
     private Boolean disabled;
+    private Integer maxLength;
+    private Integer minLength;
     private List<Option> options;
 }

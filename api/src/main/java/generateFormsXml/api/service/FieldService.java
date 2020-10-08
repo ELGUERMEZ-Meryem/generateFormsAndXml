@@ -63,6 +63,11 @@ public class FieldService implements IField {
         if (form != null)
             f.setDefaultValue((String) form.getValue().get(field.getNodeName()));
 
+        if (field.getFieldType().equals("input")) {
+            f.getTemplateOptions().setMaxLength(field.getMaxLength());
+            f.getTemplateOptions().setMinLength(field.getMinLength());
+        }
+
         if (field.getFieldType().equals("select"))
             f.getTemplateOptions().setOptions(countryRepository.findAll().stream().map(country -> Option.builder().value(country.getAlpha2code()).label(country.getName()).build()).collect(Collectors.toList()));
 
