@@ -14,6 +14,8 @@ import {MatInputModule} from "@angular/material/input";
 import {MatDatepickerModule} from "@angular/material/datepicker";
 import {MatNativeDateModule} from "@angular/material/core";
 import {PanelDropdownDevType} from "./generate-form/dropdown-dev.type";
+import {FormlyFieldFile} from "./generate-form/file-type.component";
+import {FileValueAccessor} from "./generate-form/file-value-accessor";
 
 export function minlengthValidationMessage(err, field) {
   return `Should have at least ${field.templateOptions.minLength} characters`;
@@ -28,7 +30,9 @@ export function maxlengthValidationMessage(err, field) {
     AppComponent,
     GenerateFormComponent,
     DatepickerTypeComponent,
-    PanelDropdownDevType
+    PanelDropdownDevType,
+    FormlyFieldFile,
+    FileValueAccessor
   ],
   imports: [
     BrowserModule,
@@ -54,6 +58,7 @@ export function maxlengthValidationMessage(err, field) {
             },
           },
         },
+        { name: 'file', component: FormlyFieldFile, wrappers: ['form-field'] },
         { name: 'dropdown-dev', component: PanelDropdownDevType }
       ],
     }),
