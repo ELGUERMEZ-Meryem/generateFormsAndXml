@@ -65,7 +65,8 @@ public class FieldService implements IField {
 
         if (form != null && field.getIsComplexType() != null && field.getIsComplexType()) {
             f.setFieldGroup(fieldRepository.findByTemplate_CountryAndAndParentField_OrderByFieldOrderAsc(c, field).stream().map(field1 -> convert(field1, form, c)).map(fieldFormlyModel -> {
-                fieldFormlyModel.setDefaultValue(((LinkedHashMap) form.getValue().get(field.getNodeName())).get(fieldFormlyModel.getKey()));
+                if (form.getValue().get(field.getNodeName()) != null)
+                    fieldFormlyModel.setDefaultValue(((LinkedHashMap) form.getValue().get(field.getNodeName())).get(fieldFormlyModel.getKey()));
                 return fieldFormlyModel;
             }).collect(Collectors.toList()));
         }

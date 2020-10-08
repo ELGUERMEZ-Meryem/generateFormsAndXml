@@ -49,7 +49,18 @@ export class GenerateFormComponent implements OnInit {
       return;
     }
     this.error = '';
-    this.generateFormService.getAllFieldsOfUser(email).pipe(tap(fields => this.fields = fields),
+    this.generateFormService.getAllFieldsOfUser(email).pipe(tap(fields => {
+      this.fields = fields.map(field => {
+        if (field.key === 'passwordParent') {
+          field.validators = {
+            validation: [
+              { name: 'fieldMatch', options: { errorPath: 'passwordConfirm' } },
+            ],
+          };
+        }
+        return field
+      });
+      }),
       catchError(err => {
         if (err.status === 404)
           this.error = 'user not found'

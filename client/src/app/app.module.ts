@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 
 import {AppComponent} from './app.component';
 import {GenerateFormComponent} from './generate-form/generate-form.component';
-import {ReactiveFormsModule} from "@angular/forms";
+import {AbstractControl, ReactiveFormsModule} from "@angular/forms";
 import {FormlyModule} from "@ngx-formly/core";
 import {FormlyBootstrapModule} from "@ngx-formly/bootstrap";
 import {GenerateFormService} from "./generate-form/generate-form.service";
@@ -25,6 +25,21 @@ export function maxlengthValidationMessage(err, field) {
   return `This value should be less than ${field.templateOptions.maxLength} characters`;
 }
 
+export function fieldMatchValidator(control: AbstractControl) {
+  const { password, passwordConfirm } = control.value;
+
+  // avoid displaying the message error when values are empty
+  if (!passwordConfirm || !password) {
+    return null;
+  }
+
+  if (passwordConfirm === password) {
+    return null;
+  }
+
+  return { fieldMatch: { message: 'Password Not Matching' } };
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -41,6 +56,9 @@ export function maxlengthValidationMessage(err, field) {
     MatDatepickerModule,
     MatNativeDateModule,
     FormlyModule.forRoot({
+      validators: [
+        { name: 'fieldMatch', validation: fieldMatchValidator },
+      ],
       validationMessages: [
         {name: 'required', message: 'This field is required'},
         { name: 'minlength', message: minlengthValidationMessage },
