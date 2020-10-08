@@ -3,6 +3,8 @@ package generateFormsXml.api.model;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 public class FieldFormlyModel {
@@ -10,5 +12,6 @@ public class FieldFormlyModel {
     private String type;
     private Object defaultValue;
     private TemplateOption templateOptions;
+    private List<FieldFormlyModel> fieldGroup;
 }
 

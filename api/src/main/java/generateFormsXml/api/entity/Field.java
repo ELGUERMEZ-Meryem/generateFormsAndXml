@@ -46,4 +46,6 @@ public class Field extends AbstractEntity {
 
     private Boolean isComplexType;
 
+    @ManyToOne
+    private Field parentField;
 }

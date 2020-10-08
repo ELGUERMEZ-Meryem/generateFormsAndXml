@@ -28,9 +28,11 @@ export class GenerateFormComponent implements OnInit {
   }
 
   submit() {
+    console.log('form value ', this.form.value);
     if (this.form.invalid) {
       return;
     }
+    console.log('form value ', this.form.value);
     this.error = '';
     this.generateFormService.saveFieldsValues(this.model, this.email).pipe(tap(response => console.log('response ', response)),
       catchError(err => {
@@ -42,7 +44,6 @@ export class GenerateFormComponent implements OnInit {
 
   getForm(email: string) {
     this.email = email;
-    console.log('email', this.form);
     if (email === '') {
       this.error = 'you have to enter your email';
       return;

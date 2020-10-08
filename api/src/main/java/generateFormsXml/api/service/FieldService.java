@@ -1,9 +1,6 @@
 package generateFormsXml.api.service;
 
-import generateFormsXml.api.entity.Field;
-import generateFormsXml.api.entity.Form;
-import generateFormsXml.api.entity.Template;
-import generateFormsXml.api.entity.User;
+import generateFormsXml.api.entity.*;
 import generateFormsXml.api.exception.ElementNotFoundException;
 import generateFormsXml.api.model.FieldFormlyModel;
 import generateFormsXml.api.model.Option;
@@ -11,6 +8,7 @@ import generateFormsXml.api.model.TemplateOption;
 import generateFormsXml.api.repository.*;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,13 +34,14 @@ public class FieldService implements IField {
     public List<FieldFormlyModel> getAllFieldsByCountryAlpha2Code(String email) throws ElementNotFoundException {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ElementNotFoundException("User not found"));
         Form form = formRepository.findByUser_EmailAndTemplate_Country(user.getEmail(), user.getCountry());
-        return fieldRepository.findByTemplate_Country_OrderByFieldOrderAsc(user.getCountry()).stream().map(field -> convert(field, form)).collect(Collectors.toList());
+        return fieldRepository.findByTemplate_Country_OrderByFieldOrderAsc(user.getCountry()).stream().filter(field -> field.getParentField() == null).map(field -> convert(field, form, user.getCountry())).collect(Collectors.toList());
     }
 
     @Override
     public void saveXmlValues(Object object, String email) throws ElementNotFoundException {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ElementNotFoundException("User not found"));
         Form form = formRepository.findByUser_EmailAndTemplate_Country(user.getEmail(), user.getCountry());
+        System.out.println("eee "+object);
         if (form != null) {
             form.setValue((Map<String, Object>) object);
             formRepository.save(form);
@@ -53,15 +52,23 @@ public class FieldService implements IField {
 
     }
 
-    private FieldFormlyModel convert(Field field, Form form) {
+    private FieldFormlyModel convert(Field field, Form form, Country c) {
         FieldFormlyModel f = FieldFormlyModel.builder()
                 .key(field.getNodeName())
                 .type(field.getFieldType())
                 .templateOptions(TemplateOption.builder().label(field.getLabel()).disabled(!field.getIsEditable()).placeholder(field.getLabel()).required(field.getIsMandatory()).build())
                 .build();
 
-        if (form != null)
+        if (form != null && (field.getIsComplexType() == null || !field.getIsComplexType())) {
             f.setDefaultValue((String) form.getValue().get(field.getNodeName()));
+        }
+
+        if (form != null && field.getIsComplexType() != null && field.getIsComplexType()) {
+            f.setFieldGroup(fieldRepository.findByTemplate_CountryAndAndParentField_OrderByFieldOrderAsc(c, field).stream().map(field1 -> convert(field1, form, c)).map(fieldFormlyModel -> {
+                fieldFormlyModel.setDefaultValue(((LinkedHashMap) form.getValue().get(field.getNodeName())).get(fieldFormlyModel.getKey()));
+                return fieldFormlyModel;
+            }).collect(Collectors.toList()));
+        }
 
         if (field.getFieldType().equals("input")) {
             f.getTemplateOptions().setMaxLength(field.getMaxLength());
