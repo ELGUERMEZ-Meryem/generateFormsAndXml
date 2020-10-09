@@ -60,7 +60,7 @@ public class FieldService implements IField {
                 .build();
 
         if (form != null && (field.getIsComplexType() == null || !field.getIsComplexType())) {
-            f.setDefaultValue((String) form.getValue().get(field.getNodeName()));
+            f.setDefaultValue(form.getValue().get(field.getNodeName()));
         }
 
         if (form != null && field.getIsComplexType() != null && field.getIsComplexType()) {
@@ -76,9 +76,11 @@ public class FieldService implements IField {
             f.getTemplateOptions().setMinLength(field.getMinLength());
         }
 
-        if (field.getFieldType().equals("select"))
+        if (field.getFieldType().equals("select") && field.getNodeName().equals("Country"))
             f.getTemplateOptions().setOptions(countryRepository.findAll().stream().map(country -> Option.builder().value(country.getAlpha2code()).label(country.getName()).build()).collect(Collectors.toList()));
 
+        if (field.getFieldType().equals("radio") && field.getNodeName().equals("radio"))
+            f.getTemplateOptions().setOptions(userRepository.findAll().stream().map(user -> Option.builder().value(user.getId()).label(user.getEmail()).build()).collect(Collectors.toList()));
         return f;
     }
 }

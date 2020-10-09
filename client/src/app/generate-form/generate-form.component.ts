@@ -11,6 +11,7 @@ import {throwError} from "rxjs";
 })
 export class GenerateFormComponent implements OnInit {
   form = new FormGroup({});
+  //if we want force showing error from the beginning we need to add 'showErrorState: true' to model
   model: any = {};
   options: FormlyFormOptions = {
     formState: {
