@@ -15,5 +15,7 @@ public class TemplateOption {
     private Boolean disabled;
     private Integer maxLength;
     private Integer minLength;
+    private Integer maxItems;
+    private Integer minItems;
     private List<Option> options;
 }

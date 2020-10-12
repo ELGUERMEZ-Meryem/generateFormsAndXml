@@ -56,7 +56,7 @@ public class FieldService implements IField {
         FieldFormlyModel f = FieldFormlyModel.builder()
                 .key(field.getNodeName())
                 .type(field.getFieldType())
-                .templateOptions(TemplateOption.builder().label(field.getLabel()).disabled(!field.getIsEditable()).placeholder(field.getLabel()).required(field.getIsMandatory()).build())
+                .templateOptions(TemplateOption.builder().label(field.getLabel()).maxItems(field.getMaxOccurs()).minItems(field.getMinOccurs()).disabled(!field.getIsEditable()).placeholder(field.getLabel()).required(field.getIsMandatory()).build())
                 .build();
 
         if (form != null && (field.getIsComplexType() == null || !field.getIsComplexType())) {
