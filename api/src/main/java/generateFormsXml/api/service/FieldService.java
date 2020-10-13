@@ -20,14 +20,14 @@ public class FieldService implements IField {
     private final UserRepository userRepository;
     private final FormRepository formRepository;
     private final TemplateRepository templateRepository;
-    private final CountryRepository countryRepository;
+    private final OptionsRepository optionsRepository;
 
-    public FieldService(FieldRepository fieldRepository, UserRepository userRepository, FormRepository formRepository, TemplateRepository templateRepository, CountryRepository countryRepository) {
+    public FieldService(FieldRepository fieldRepository, UserRepository userRepository, FormRepository formRepository, TemplateRepository templateRepository, OptionsRepository optionsRepository) {
         this.fieldRepository = fieldRepository;
         this.userRepository = userRepository;
         this.formRepository = formRepository;
         this.templateRepository = templateRepository;
-        this.countryRepository = countryRepository;
+        this.optionsRepository = optionsRepository;
     }
 
     @Override
@@ -76,8 +76,8 @@ public class FieldService implements IField {
             f.getTemplateOptions().setMinLength(field.getMinLength());
         }
 
-        if (field.getFieldType().equals("select") && field.getNodeName().equals("Country"))
-            f.getTemplateOptions().setOptions(countryRepository.findAll().stream().map(country -> Option.builder().value(country.getAlpha2code()).label(country.getName()).build()).collect(Collectors.toList()));
+        if (field.getFieldType().equals("select"))
+            f.getTemplateOptions().setOptions(optionsRepository.findByField_NodeName(field.getNodeName()).stream().map(op -> Option.builder().value(op.getValue()).label(op.getName()).build()).collect(Collectors.toList()));
 
         if (field.getFieldType().equals("radio") && field.getNodeName().equals("radio"))
             f.getTemplateOptions().setOptions(userRepository.findAll().stream().map(user -> Option.builder().value(user.getId()).label(user.getEmail()).build()).collect(Collectors.toList()));
