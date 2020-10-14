@@ -48,4 +48,7 @@ public class Field extends AbstractEntity {
 
     @ManyToOne
     private Field parentField;
+
+    @ManyToOne
+    private Field attributeField;
 }

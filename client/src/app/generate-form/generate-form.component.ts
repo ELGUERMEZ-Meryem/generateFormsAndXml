@@ -29,7 +29,7 @@ export class GenerateFormComponent implements OnInit {
   }
 
   submit() {
-    console.log('form value ', this.form.value);
+    console.log('model ', this.model);
     if (this.form.invalid) {
       return;
     }

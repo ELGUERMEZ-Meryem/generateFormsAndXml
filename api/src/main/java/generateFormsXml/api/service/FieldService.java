@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class FieldService implements IField {
@@ -34,7 +35,7 @@ public class FieldService implements IField {
     public List<FieldFormlyModel> getAllFieldsByCountryAlpha2Code(String email) throws ElementNotFoundException {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ElementNotFoundException("User not found"));
         Form form = formRepository.findByUser_EmailAndTemplate_Country(user.getEmail(), user.getCountry());
-        return fieldRepository.findByTemplate_Country_OrderByFieldOrderAsc(user.getCountry()).stream().filter(field -> field.getParentField() == null).map(field -> convert(field, form, user.getCountry())).collect(Collectors.toList());
+        return fieldRepository.findByTemplate_Country_OrderByFieldOrderAsc(user.getCountry()).stream().filter(field -> field.getParentField() == null && field.getAttributeField() == null).map(field -> convert(field, form, user.getCountry())).collect(Collectors.toList());
     }
 
     @Override
@@ -63,12 +64,19 @@ public class FieldService implements IField {
             f.setDefaultValue(form.getValue().get(field.getNodeName()));
         }
 
-        if (form != null && field.getIsComplexType() != null && field.getIsComplexType()) {
-            f.setFieldGroup(fieldRepository.findByTemplate_CountryAndAndParentField_OrderByFieldOrderAsc(c, field).stream().map(field1 -> convert(field1, form, c)).map(fieldFormlyModel -> {
-                if (form.getValue().get(field.getNodeName()) != null)
+        if (field.getIsComplexType() != null && field.getIsComplexType()) {
+            f.setFieldGroup(fieldRepository.findByTemplate_CountryAndParentField_OrderByFieldOrderAsc(c, field).stream().map(field1 -> convert(field1, form, c)).map(fieldFormlyModel -> {
+                if (form != null && form.getValue().get(field.getNodeName()) != null)
                     fieldFormlyModel.setDefaultValue(((LinkedHashMap) form.getValue().get(field.getNodeName())).get(fieldFormlyModel.getKey()));
                 return fieldFormlyModel;
             }).collect(Collectors.toList()));
+
+            f.setFieldGroup(Stream.concat(f.getFieldGroup().stream(), fieldRepository.findByTemplate_CountryAndAttributeField_OrderByFieldOrderAsc(c, field).stream().map(field1 -> convert(field1, form, c)).map(fieldFormlyModel -> {
+                fieldFormlyModel.setKey("@"+fieldFormlyModel.getKey());
+                if (form != null && form.getValue().get(field.getNodeName()) != null)
+                    fieldFormlyModel.setDefaultValue(((LinkedHashMap) form.getValue().get(field.getNodeName())).get(fieldFormlyModel.getKey()));
+                return fieldFormlyModel;
+            })).collect(Collectors.toList()));
         }
 
         if (field.getFieldType().equals("input")) {
@@ -79,8 +87,8 @@ public class FieldService implements IField {
         if (field.getFieldType().equals("select"))
             f.getTemplateOptions().setOptions(optionsRepository.findByField_NodeName(field.getNodeName()).stream().map(op -> Option.builder().value(op.getValue()).label(op.getName()).build()).collect(Collectors.toList()));
 
-        if (field.getFieldType().equals("radio") && field.getNodeName().equals("radio"))
-            f.getTemplateOptions().setOptions(userRepository.findAll().stream().map(user -> Option.builder().value(user.getId()).label(user.getEmail()).build()).collect(Collectors.toList()));
+        if (field.getFieldType().equals("radio"))
+            f.getTemplateOptions().setOptions(optionsRepository.findByField_NodeName(field.getNodeName()).stream().map(op -> Option.builder().value(op.getValue()).label(op.getName()).build()).collect(Collectors.toList()));
         return f;
     }
 }
