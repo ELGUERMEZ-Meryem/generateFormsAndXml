@@ -8,6 +8,7 @@ import generateFormsXml.api.model.TemplateOption;
 import generateFormsXml.api.repository.*;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,15 +57,17 @@ public class FieldService implements IField {
     private FieldFormlyModel convert(Field field, Form form, Country c) {
         FieldFormlyModel f = FieldFormlyModel.builder()
                 .key(field.getNodeName())
-                .type(field.getFieldType())
                 .templateOptions(TemplateOption.builder().label(field.getLabel()).maxItems(field.getMaxOccurs()).minItems(field.getMinOccurs()).disabled(!field.getIsEditable()).placeholder(field.getLabel()).required(field.getIsMandatory()).build())
                 .build();
 
-        if (form != null && (field.getIsComplexType() == null || !field.getIsComplexType())) {
-            f.setDefaultValue(form.getValue().get(field.getNodeName()));
+        if (field.getIsComplexType() == null || !field.getIsComplexType()) {
+            f.setType(field.getFieldType());
+            if (form != null)
+                f.setDefaultValue(form.getValue().get(field.getNodeName()));
         }
 
         if (field.getIsComplexType() != null && field.getIsComplexType()) {
+            f.setWrappers(Arrays.asList("panel"));
             f.setFieldGroup(fieldRepository.findByTemplate_CountryAndParentField_OrderByFieldOrderAsc(c, field).stream().map(field1 -> convert(field1, form, c)).map(fieldFormlyModel -> {
                 if (form != null && form.getValue().get(field.getNodeName()) != null)
                     fieldFormlyModel.setDefaultValue(((LinkedHashMap) form.getValue().get(field.getNodeName())).get(fieldFormlyModel.getKey()));

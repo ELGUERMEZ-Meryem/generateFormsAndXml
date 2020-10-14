@@ -13,10 +13,10 @@ import {DatepickerTypeComponent} from "./generate-form/datepicker-type.component
 import {MatInputModule} from "@angular/material/input";
 import {MatDatepickerModule} from "@angular/material/datepicker";
 import {MatNativeDateModule} from "@angular/material/core";
-import {PanelDropdownDevType} from "./generate-form/dropdown-dev.type";
 import {FormlyFieldFile} from "./generate-form/file-type.component";
 import {FileValueAccessor} from "./generate-form/file-value-accessor";
 import {RepeatTypeComponent} from "./generate-form/repeat-section.type";
+import {PanelWrapperComponent} from "./generate-form/panel-wrapper.component";
 
 export function minlengthValidationMessage(err, field) {
   return `Should have at least ${field.templateOptions.minLength} characters`;
@@ -46,10 +46,10 @@ export function fieldMatchValidator(control: AbstractControl) {
     AppComponent,
     GenerateFormComponent,
     DatepickerTypeComponent,
-    PanelDropdownDevType,
     FormlyFieldFile,
     FileValueAccessor,
-    RepeatTypeComponent
+    RepeatTypeComponent,
+    PanelWrapperComponent
   ],
   imports: [
     BrowserModule,
@@ -66,6 +66,9 @@ export function fieldMatchValidator(control: AbstractControl) {
         { name: 'minlength', message: minlengthValidationMessage },
         { name: 'maxlength', message: maxlengthValidationMessage },
       ],
+      wrappers: [
+        { name: 'panel', component: PanelWrapperComponent },
+      ],
       types: [
         {
           name: 'datepicker',
@@ -79,7 +82,6 @@ export function fieldMatchValidator(control: AbstractControl) {
           },
         },
         { name: 'file', component: FormlyFieldFile, wrappers: ['form-field'] },
-        { name: 'dropdown-dev', component: PanelDropdownDevType },
         { name: 'repeat', component: RepeatTypeComponent }
       ],
     }),
