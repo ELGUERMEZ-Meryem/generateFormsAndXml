@@ -4,6 +4,7 @@ import { FieldArrayType } from '@ngx-formly/core';
 @Component({
   selector: 'formly-repeat-section',
   template: `
+    <label>{{ field.key }}:{{ field.fieldGroup.length }}: {{ to.minItems }} : {{ to.maxItems }} </label>
     <div *ngFor="let f of field.fieldGroup; let i = index;" class="row">
       <formly-field class="col" [field]="f" ></formly-field>
       <div *ngIf="!to.minItems || to.minItems != field.fieldGroup.length || to.minItems < field.fieldGroup.length" class="col">

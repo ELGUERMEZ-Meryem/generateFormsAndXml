@@ -2,6 +2,7 @@ package generateFormsXml.api.service;
 
 import generateFormsXml.api.entity.*;
 import generateFormsXml.api.exception.ElementNotFoundException;
+import generateFormsXml.api.model.FieldArray;
 import generateFormsXml.api.model.FieldFormlyModel;
 import generateFormsXml.api.model.Option;
 import generateFormsXml.api.model.TemplateOption;
@@ -61,23 +62,24 @@ public class FieldService implements IField {
                 .build();
 
         if (field.getIsComplexType() == null || !field.getIsComplexType()) {
-            f.setType(field.getFieldType());
+            f.setType("repeat");
+            f.setFieldArray(FieldArray.builder().type(field.getFieldType()).build());
             if (form != null)
-                f.setDefaultValue(form.getValue().get(field.getNodeName()));
+                f.setDefaultValue(Arrays.asList(form.getValue().get(field.getNodeName())));
         }
 
         if (field.getIsComplexType() != null && field.getIsComplexType()) {
             f.setWrappers(Arrays.asList("panel"));
             f.setFieldGroup(fieldRepository.findByTemplate_CountryAndParentField_OrderByFieldOrderAsc(c, field).stream().map(field1 -> convert(field1, form, c)).map(fieldFormlyModel -> {
                 if (form != null && form.getValue().get(field.getNodeName()) != null)
-                    fieldFormlyModel.setDefaultValue(((LinkedHashMap) form.getValue().get(field.getNodeName())).get(fieldFormlyModel.getKey()));
+                    fieldFormlyModel.setDefaultValue(Arrays.asList(((LinkedHashMap) form.getValue().get(field.getNodeName())).get(fieldFormlyModel.getKey())));
                 return fieldFormlyModel;
             }).collect(Collectors.toList()));
 
             f.setFieldGroup(Stream.concat(f.getFieldGroup().stream(), fieldRepository.findByTemplate_CountryAndAttributeField_OrderByFieldOrderAsc(c, field).stream().map(field1 -> convert(field1, form, c)).map(fieldFormlyModel -> {
                 fieldFormlyModel.setKey("@"+fieldFormlyModel.getKey());
                 if (form != null && form.getValue().get(field.getNodeName()) != null)
-                    fieldFormlyModel.setDefaultValue(((LinkedHashMap) form.getValue().get(field.getNodeName())).get(fieldFormlyModel.getKey()));
+                    fieldFormlyModel.setDefaultValue(Arrays.asList(((LinkedHashMap) form.getValue().get(field.getNodeName())).get(fieldFormlyModel.getKey())));
                 return fieldFormlyModel;
             })).collect(Collectors.toList()));
         }
